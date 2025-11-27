@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEB Comic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: #00d4ff;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            padding: 10px 20px;
+            border: 1px solid #00d4ff;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .back-link:hover {
+            background: #00d4ff;
+            color: #1a1a1a;
+        }
+
+        .comic-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            max-width: 100%;
+            margin-top: 60px;
+        }
+
+        .comic-container img {
+            width: 80%;
+            max-width: 100%;
+            height: auto;
+            aspect-ratio: 9 / 16;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">← Back to NEB</a>
+    <div class="comic-container">
+        <img src="NEB1.png" alt="NEB Comic Page 1">
+        <img src="NEB2.png" alt="NEB Comic Page 2">
+        <img src="NEB3.png" alt="NEB Comic Page 3">
+        <img src="NEB4.png" alt="NEB Comic Page 4">
+        <img src="NEB5.png" alt="NEB Comic Page 5">
+        <img src="NEB6.png" alt="NEB Comic Page 6">
+    </div>
+</body>
+</html>

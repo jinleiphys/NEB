@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nonelastic Breakup - Interactive Nuclear Physics</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader">
+            <div class="nucleus-loader"></div>
+            <p>Initializing Nuclear Simulation...</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-logo">
+            <span class="atom-icon">&#9883;</span>
+            <span>NEB</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#hero" class="active">Home</a></li>
+            <li><a href="#concept">Concept</a></li>
+            <li><a href="#comparison">Comparison</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#applications">Applications</a></li>
+            <li><a href="comic/index.html">Comic</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section with 3D Animation -->
+    <section id="hero">
+        <div id="canvas-container"></div>
+        <div class="hero-content">
+            <h1 class="glitch" data-text="Nonelastic Breakup">Nonelastic Breakup</h1>
+            <p class="subtitle">Nuclear Reaction Dynamics</p>
+            <p class="description">Explore the fascinating process of nuclear breakup and fragment absorption</p>
+            <div class="hero-buttons">
+                <button id="start-animation" class="btn-primary">
+                    <span>Launch Simulation</span>
+                    <div class="btn-glow"></div>
+                </button>
+                <button id="learn-more" class="btn-secondary">Learn More</button>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse"></div>
+            <p>Scroll Down</p>
+        </div>
+    </section>
+
+    <!-- Concept Section -->
+    <section id="concept">
+        <div class="section-header">
+            <h2>What is Nonelastic Breakup?</h2>
+            <div class="header-line"></div>
+        </div>
+
+        <div class="concept-intro">
+            <p class="lead-text">
+                Nonelastic breakup is a nuclear reaction process in which a projectile nucleus breaks apart
+                when interacting with a target nucleus, and some of the fragments interact with the target
+                through nuclear forces rather than simply scattering elastically.
+            </p>
+        </div>
+
+        <div class="concept-grid">
+            <div class="concept-card">
+                <div class="card-icon">
+                    <div id="mini-canvas-1" class="mini-canvas"></div>
+                </div>
+                <h3>Approach</h3>
+                <p>A loosely bound projectile (deuteron, <sup>6</sup>Li, <sup>7</sup>Li, <sup>9</sup>Be, or halo nuclei) approaches the target</p>
+            </div>
+
+            <div class="concept-card">
+                <div class="card-icon">
+                    <div id="mini-canvas-2" class="mini-canvas"></div>
+                </div>
+                <h3>Dissociation</h3>
+                <p>The projectile dissociates into its constituent clusters under Coulomb and nuclear forces</p>
+            </div>
+
+            <div class="concept-card">
+                <div class="card-icon">
+                    <div id="mini-canvas-3" class="mini-canvas"></div>
+                </div>
+                <h3>Fragment Reaction</h3>
+                <p>At least one fragment undergoes nuclear reaction with target: absorption, fusion, or transfer</p>
+            </div>
+        </div>
+
+        <div class="concept-details">
+            <div class="detail-block">
+                <h4>Key Characteristics</h4>
+                <ul>
+                    <li><span class="highlight">Partial Absorption</span> - Not all fragments react with the target</li>
+                    <li><span class="highlight">Incomplete Fusion</span> - Distinct from complete fusion of intact projectile</li>
+                    <li><span class="highlight">Complex Products</span> - Multiple reaction products are generated</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section id="comparison">
+        <div class="section-header">
+            <h2>Elastic vs Nonelastic Breakup</h2>
+            <div class="header-line"></div>
+        </div>
+
+        <div class="comparison-container">
+            <div class="comparison-panel elastic">
+                <div class="panel-header">
+                    <h3>Elastic Breakup</h3>
+                    <span class="badge">Coulomb Dissociation</span>
+                </div>
+                <div id="elastic-canvas" class="comparison-canvas"></div>
+                <div class="panel-info">
+                    <p>Also known as diffractive breakup</p>
+                    <ul>
+                        <li>All fragments scatter elastically</li>
+                        <li>No nuclear reaction occurs</li>
+                        <li>Fragments retain original properties</li>
+                        <li>Both fragments escape the target</li>
+                    </ul>
+                </div>
+                <button class="play-btn" data-type="elastic">
+                    <span class="play-icon">&#9654;</span> Play Animation
+                </button>
+            </div>
+
+            <div class="vs-divider">
+                <span>VS</span>
+            </div>
+
+            <div class="comparison-panel nonelastic">
+                <div class="panel-header">
+                    <h3>Nonelastic Breakup</h3>
+                    <span class="badge accent">Fragment Absorption</span>
+                </div>
+                <div id="nonelastic-canvas" class="comparison-canvas"></div>
+                <div class="panel-info">
+                    <p>Fragment interacts via nuclear forces</p>
+                    <ul>
+                        <li>At least one fragment is absorbed</li>
+                        <li>Fusion or transfer may occur</li>
+                        <li>Produces incomplete fusion products</li>
+                        <li>One fragment escapes as spectator</li>
+                    </ul>
+                </div>
+                <button class="play-btn" data-type="nonelastic">
+                    <span class="play-icon">&#9654;</span> Play Animation
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section id="examples">
+        <div class="section-header">
+            <h2>Typical Projectile Nuclei</h2>
+            <div class="header-line"></div>
+        </div>
+
+        <div class="examples-showcase">
+            <div class="projectile-selector">
+                <button class="projectile-btn active" data-projectile="deuteron">
+                    <span class="formula"><sup>2</sup>H</span>
+                    <span class="name">Deuteron</span>
+                </button>
+                <button class="projectile-btn" data-projectile="li6">
+                    <span class="formula"><sup>6</sup>Li</span>
+                    <span class="name">Lithium-6</span>
+                </button>
+                <button class="projectile-btn" data-projectile="li7">
+                    <span class="formula"><sup>7</sup>Li</span>
+                    <span class="name">Lithium-7</span>
+                </button>
+                <button class="projectile-btn" data-projectile="be11">
+                    <span class="formula"><sup>11</sup>Be</span>
+                    <span class="name">Beryllium-11</span>
+                </button>
+                <button class="projectile-btn" data-projectile="halo">
+                    <span class="formula"><sup>11</sup>Li</span>
+                    <span class="name">Halo Nucleus</span>
+                </button>
+            </div>
+
+            <div id="example-canvas" class="example-3d"></div>
+
+            <div class="projectile-info">
+                <div id="deuteron-info" class="info-panel active">
+                    <h4>Deuteron (d)</h4>
+                    <div class="structure">
+                        <span class="proton">p</span> + <span class="neutron">n</span>
+                    </div>
+                    <p>The simplest composite nucleus, consisting of one proton and one neutron loosely bound together. With a binding energy of only 2.22 MeV, it easily breaks up near a target nucleus.</p>
+                    <div class="reaction-example">
+                        <strong>Typical reactions:</strong><br>
+                        d + A &#8594; p + (n + A) or d + A &#8594; n + (p + A)
+                    </div>
+                </div>
+                <div id="li6-info" class="info-panel">
+                    <h4>Lithium-6 (<sup>6</sup>Li)</h4>
+                    <div class="structure">
+                        <span class="alpha">&#945;</span> + <span class="deuteron">d</span>
+                    </div>
+                    <p>Can be viewed as an alpha particle + deuteron cluster structure. Breakup threshold energy is approximately 1.47 MeV.</p>
+                    <div class="reaction-example">
+                        <strong>Typical reaction:</strong><br>
+                        <sup>6</sup>Li &#8594; &#945; + d, with one fragment absorbed by target
+                    </div>
+                </div>
+                <div id="li7-info" class="info-panel">
+                    <h4>Lithium-7 (<sup>7</sup>Li)</h4>
+                    <div class="structure">
+                        <span class="alpha">&#945;</span> + <span class="triton">t</span>
+                    </div>
+                    <p>Alpha particle + triton cluster structure. Breakup threshold energy is approximately 2.47 MeV.</p>
+                    <div class="reaction-example">
+                        <strong>Typical reaction:</strong><br>
+                        <sup>7</sup>Li &#8594; &#945; + t, fragments may trigger secondary reactions
+                    </div>
+                </div>
+                <div id="be11-info" class="info-panel">
+                    <h4>Beryllium-11 (<sup>11</sup>Be)</h4>
+                    <div class="structure">
+                        <span class="core">&#185;&#8304;Be</span> + <span class="halo-n">n</span>
+                    </div>
+                    <p>A one-neutron halo nucleus with an extremely low neutron separation energy of only 0.50 MeV. The valence neutron extends far beyond the <sup>10</sup>Be core.</p>
+                    <div class="reaction-example">
+                        <strong>Typical reaction:</strong><br>
+                        <sup>11</sup>Be &#8594; <sup>10</sup>Be + n, with the halo neutron easily stripped
+                    </div>
+                </div>
+                <div id="halo-info" class="info-panel">
+                    <h4>Halo Nuclei (<sup>11</sup>Li, <sup>6</sup>He)</h4>
+                    <div class="structure">
+                        <span class="core">Core</span> + <span class="halo-n">Halo neutrons</span>
+                    </div>
+                    <p>Exotic nuclei with extended neutron halo structure. Extremely low separation energy makes them highly susceptible to breakup.</p>
+                    <div class="reaction-example">
+                        <strong>Key feature:</strong><br>
+                        Halo neutrons extend far beyond the core, resulting in anomalously large breakup cross-sections
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Applications Section -->
+    <section id="applications">
+        <div class="section-header">
+            <h2>Research Significance</h2>
+            <div class="header-line"></div>
+        </div>
+
+        <div class="applications-grid">
+            <div class="app-card">
+                <div class="app-icon">&#128300;</div>
+                <h4>Fusion Studies</h4>
+                <p>Understanding fusion mechanisms near the Coulomb barrier, distinguishing complete fusion from incomplete fusion</p>
+            </div>
+            <div class="app-card">
+                <div class="app-icon">&#9762;</div>
+                <h4>Radioactive Ion Beams</h4>
+                <p>Production and study of exotic nuclei far from the stability line</p>
+            </div>
+            <div class="app-card">
+                <div class="app-icon">&#11088;</div>
+                <h4>Nuclear Astrophysics</h4>
+                <p>Understanding reaction pathways in stellar nucleosynthesis processes</p>
+            </div>
+            <div class="app-card">
+                <div class="app-icon">&#128202;</div>
+                <h4>Nuclear Structure</h4>
+                <p>Probing cluster structures in weakly bound nuclei and halo nucleus properties</p>
+            </div>
+        </div>
+
+        <div class="formula-section">
+            <h4>Key Physical Quantities</h4>
+            <div class="formula-grid">
+                <div class="formula-item">
+                    <div class="formula">&#963;<sub>total</sub> = &#963;<sub>CF</sub> + &#963;<sub>EB</sub> + &#963;<sub>NEB</sub></div>
+                    <p>Total reaction cross-section components:<br>CF = Complete Fusion, EB = Elastic Breakup,<br>NEB = Nonelastic Breakup (includes Incomplete Fusion)</p>
+                </div>
+                <div class="formula-item">
+                    <div class="formula">E<sub>th</sub> = S<sub>n</sub> or S<sub>p</sub></div>
+                    <p>Breakup threshold energy equals the separation energy</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comic Section -->
+    <section id="comic-cta" style="padding: 80px 20px; text-align: center; background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);">
+        <h2 style="font-family: 'Orbitron', sans-serif; color: #fff; margin-bottom: 20px; font-size: 2rem;">Explore the NEB Comic</h2>
+        <p style="color: #aaa; margin-bottom: 30px; font-size: 1.1rem;">Discover nonelastic breakup through visual storytelling</p>
+        <a href="comic/index.html" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #00d4ff, #0099cc); color: #000; text-decoration: none; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.1rem; border-radius: 8px; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);">View Comic →</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>Nonelastic Breakup - Interactive Nuclear Physics Visualization</p>
+            <p class="credits">Created for Nuclear Physics Education</p>
+        </div>
+    </footer>
+
+    <!-- Control Panel (floating) -->
+    <div id="control-panel">
+        <button id="toggle-panel" title="Control Panel">&#9881;</button>
+        <div class="panel-content">
+            <h4>Simulation Controls</h4>
+            <div class="control-group">
+                <label>Projectile Energy</label>
+                <input type="range" id="energy-slider" min="1" max="100" value="50">
+                <span id="energy-value">50 MeV</span>
+            </div>
+            <div class="control-group">
+                <label>Impact Parameter</label>
+                <input type="range" id="impact-slider" min="0" max="100" value="23">
+                <span id="impact-value">2.3 fm</span>
+            </div>
+            <div class="control-group">
+                <label>Animation Speed</label>
+                <input type="range" id="speed-slider" min="1" max="10" value="5">
+            </div>
+            <div class="control-buttons">
+                <button id="reset-view">Reset View</button>
+                <button id="toggle-trails">Trails On/Off</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
