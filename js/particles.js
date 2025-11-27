@@ -180,72 +180,102 @@ class ParticleSystem {
         return group;
     }
 
-    // Create target nucleus (heavy nucleus)
+    // Create target nucleus (heavy nucleus) - Glowing Energy Style
     createTargetNucleus(position = { x: 0, y: 0, z: 0 }, size = 2) {
         const group = new THREE.Group();
 
-        // Core sphere - golden/amber color like a real nucleus visualization
-        const coreGeom = new THREE.SphereGeometry(size, 64, 64);
+        // Inner bright core - intense glowing center
+        const innerCoreGeom = new THREE.SphereGeometry(size * 0.3, 32, 32);
+        const innerCoreMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.9
+        });
+        const innerCore = new THREE.Mesh(innerCoreGeom, innerCoreMat);
+        group.add(innerCore);
+
+        // Main core - gradient from hot center to cooler edge
+        const coreGeom = new THREE.SphereGeometry(size * 0.7, 64, 64);
         const coreMat = new THREE.MeshPhongMaterial({
-            color: 0xd4a574,
-            emissive: 0x8b6914,
-            emissiveIntensity: 0.2,
-            shininess: 80,
+            color: 0xff6633,
+            emissive: 0xff4400,
+            emissiveIntensity: 0.8,
+            shininess: 100,
             transparent: true,
             opacity: 0.85
         });
         const core = new THREE.Mesh(coreGeom, coreMat);
         group.add(core);
 
-        // Inner nucleons - densely packed inside the nucleus
-        const nucleonGeom = new THREE.SphereGeometry(size * 0.15, 12, 12);
-        const protonMat = new THREE.MeshPhongMaterial({
-            color: 0xff6b6b,
-            emissive: 0xff3333,
-            emissiveIntensity: 0.3
+        // Middle layer - orange/yellow energy
+        const midGeom = new THREE.SphereGeometry(size * 0.85, 48, 48);
+        const midMat = new THREE.MeshPhongMaterial({
+            color: 0xff8844,
+            emissive: 0xff6600,
+            emissiveIntensity: 0.5,
+            shininess: 50,
+            transparent: true,
+            opacity: 0.5
         });
-        const neutronMat = new THREE.MeshPhongMaterial({
-            color: 0x4dabf7,
-            emissive: 0x2288ff,
-            emissiveIntensity: 0.3
+        const mid = new THREE.Mesh(midGeom, midMat);
+        group.add(mid);
+
+        // Outer shell - cooler outer layer
+        const outerGeom = new THREE.SphereGeometry(size, 48, 48);
+        const outerMat = new THREE.MeshPhongMaterial({
+            color: 0xffaa66,
+            emissive: 0xcc6600,
+            emissiveIntensity: 0.3,
+            shininess: 30,
+            transparent: true,
+            opacity: 0.35
         });
+        const outer = new THREE.Mesh(outerGeom, outerMat);
+        group.add(outer);
 
-        // Create nucleons inside the nucleus (not on surface)
-        for (let i = 0; i < 50; i++) {
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.acos(2 * Math.random() - 1);
-            const r = Math.random() * size * 0.85; // Inside the nucleus
+        // Glow layer 1 - close glow
+        const glow1Geom = new THREE.SphereGeometry(size * 1.2, 32, 32);
+        const glow1Mat = new THREE.MeshBasicMaterial({
+            color: 0xff6633,
+            transparent: true,
+            opacity: 0.15
+        });
+        const glow1 = new THREE.Mesh(glow1Geom, glow1Mat);
+        group.add(glow1);
 
-            const x = r * Math.sin(phi) * Math.cos(theta);
-            const y = r * Math.sin(phi) * Math.sin(theta);
-            const z = r * Math.cos(phi);
-
-            const mat = Math.random() > 0.45 ? protonMat : neutronMat; // Slightly more neutrons
-            const nucleon = new THREE.Mesh(nucleonGeom, mat);
-            nucleon.position.set(x, y, z);
-            group.add(nucleon);
-        }
-
-        // Soft outer glow - warm color
-        const glowGeom = new THREE.SphereGeometry(size * 1.15, 32, 32);
-        const glowMat = new THREE.MeshBasicMaterial({
-            color: 0xffaa55,
+        // Glow layer 2 - medium glow
+        const glow2Geom = new THREE.SphereGeometry(size * 1.5, 32, 32);
+        const glow2Mat = new THREE.MeshBasicMaterial({
+            color: 0xff8855,
             transparent: true,
             opacity: 0.08
         });
-        const glow = new THREE.Mesh(glowGeom, glowMat);
-        group.add(glow);
+        const glow2 = new THREE.Mesh(glow2Geom, glow2Mat);
+        group.add(glow2);
 
-        // Coulomb field - subtle electric field lines
-        const fieldGeom = new THREE.SphereGeometry(size * 1.4, 24, 24);
-        const fieldMat = new THREE.MeshBasicMaterial({
-            color: 0x00d4ff,
+        // Glow layer 3 - outer halo
+        const glow3Geom = new THREE.SphereGeometry(size * 1.9, 32, 32);
+        const glow3Mat = new THREE.MeshBasicMaterial({
+            color: 0xffaa77,
             transparent: true,
-            opacity: 0.05,
-            wireframe: true
+            opacity: 0.04
         });
-        const field = new THREE.Mesh(fieldGeom, fieldMat);
-        group.add(field);
+        const glow3 = new THREE.Mesh(glow3Geom, glow3Mat);
+        group.add(glow3);
+
+        // Energy field rings
+        for (let i = 1; i <= 2; i++) {
+            const ringGeom = new THREE.TorusGeometry(size * (1.1 + i * 0.25), 0.02, 8, 64);
+            const ringMat = new THREE.MeshBasicMaterial({
+                color: 0x00d4ff,
+                transparent: true,
+                opacity: 0.2 / i
+            });
+            const ring = new THREE.Mesh(ringGeom, ringMat);
+            ring.rotation.x = Math.PI / 2;
+            ring.rotation.y = i * 0.3;
+            group.add(ring);
+        }
 
         group.position.set(position.x, position.y, position.z);
         group.userData = {
