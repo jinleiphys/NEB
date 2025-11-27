@@ -71,7 +71,20 @@
         <div class="concept-grid">
             <div class="concept-card">
                 <div class="card-icon">
-                    <div id="mini-canvas-1" class="mini-canvas"></div>
+                    <svg class="concept-svg" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Target nucleus -->
+                        <circle cx="90" cy="40" r="20" fill="#4a5568" stroke="#00d4ff" stroke-width="1" opacity="0.8"/>
+                        <!-- Projectile approaching -->
+                        <g class="approach-projectile">
+                            <circle cx="25" cy="40" r="8" fill="#ff6b6b"/>
+                            <circle cx="35" cy="40" r="6" fill="#4dabf7"/>
+                        </g>
+                        <!-- Arrow -->
+                        <path d="M45 40 L65 40" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4,2">
+                            <animate attributeName="stroke-dashoffset" from="0" to="-12" dur="1s" repeatCount="indefinite"/>
+                        </path>
+                        <polygon points="68,40 62,36 62,44" fill="#00d4ff"/>
+                    </svg>
                 </div>
                 <h3>Approach</h3>
                 <p>A loosely bound projectile (deuteron, <sup>6</sup>Li, <sup>7</sup>Li, <sup>9</sup>Be, or halo nuclei) approaches the target</p>
@@ -79,7 +92,23 @@
 
             <div class="concept-card">
                 <div class="card-icon">
-                    <div id="mini-canvas-2" class="mini-canvas"></div>
+                    <svg class="concept-svg" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Target nucleus -->
+                        <circle cx="90" cy="40" r="20" fill="#4a5568" stroke="#00d4ff" stroke-width="1" opacity="0.8"/>
+                        <!-- Dissociating projectile -->
+                        <circle cx="45" cy="30" r="8" fill="#ff6b6b">
+                            <animate attributeName="cx" values="45;40;45" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="cy" values="30;25;30" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="45" cy="50" r="6" fill="#4dabf7">
+                            <animate attributeName="cx" values="45;40;45" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="cy" values="50;55;50" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <!-- Separation lines -->
+                        <path d="M50 30 Q55 40 50 50" stroke="#ffd43b" stroke-width="1.5" fill="none" stroke-dasharray="3,2" opacity="0.7"/>
+                        <!-- Force field indicator -->
+                        <circle cx="90" cy="40" r="30" fill="none" stroke="#00d4ff" stroke-width="0.5" stroke-dasharray="2,3" opacity="0.4"/>
+                    </svg>
                 </div>
                 <h3>Dissociation</h3>
                 <p>The projectile dissociates into its constituent clusters under Coulomb and nuclear forces</p>
@@ -87,7 +116,27 @@
 
             <div class="concept-card">
                 <div class="card-icon">
-                    <div id="mini-canvas-3" class="mini-canvas"></div>
+                    <svg class="concept-svg" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Target nucleus (larger after absorption) -->
+                        <circle cx="85" cy="40" r="22" fill="#4a5568" stroke="#00d4ff" stroke-width="1" opacity="0.8">
+                            <animate attributeName="r" values="22;24;22" dur="1.5s" repeatCount="indefinite"/>
+                        </circle>
+                        <!-- Absorbed fragment inside target -->
+                        <circle cx="78" cy="38" r="6" fill="#ff6b6b" opacity="0.8"/>
+                        <!-- Escaping fragment -->
+                        <circle cx="30" cy="25" r="5" fill="#4dabf7">
+                            <animate attributeName="cx" values="30;25;30" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <!-- Escape trajectory -->
+                        <path d="M35 28 L50 35" stroke="#4dabf7" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+                        <!-- Absorption indicator -->
+                        <path d="M60 42 Q70 40 75 38" stroke="#ff6b6b" stroke-width="1.5" fill="none" opacity="0.6">
+                            <animate attributeName="opacity" values="0.6;0.2;0.6" dur="1s" repeatCount="indefinite"/>
+                        </path>
+                        <!-- Gamma ray emission -->
+                        <path d="M95 25 L105 15" stroke="#ffd43b" stroke-width="1.5"/>
+                        <path d="M100 30 L110 22" stroke="#ffd43b" stroke-width="1.5"/>
+                    </svg>
                 </div>
                 <h3>Fragment Reaction</h3>
                 <p>At least one fragment undergoes nuclear reaction with target: absorption, fusion, or transfer</p>
@@ -183,11 +232,11 @@
                 </button>
                 <button class="projectile-btn" data-projectile="be11">
                     <span class="formula"><sup>11</sup>Be</span>
-                    <span class="name">Beryllium-11</span>
+                    <span class="name">1n Halo</span>
                 </button>
-                <button class="projectile-btn" data-projectile="halo">
+                <button class="projectile-btn" data-projectile="li11">
                     <span class="formula"><sup>11</sup>Li</span>
-                    <span class="name">Halo Nucleus</span>
+                    <span class="name">2n Halo</span>
                 </button>
             </div>
 
@@ -228,25 +277,25 @@
                     </div>
                 </div>
                 <div id="be11-info" class="info-panel">
-                    <h4>Beryllium-11 (<sup>11</sup>Be)</h4>
+                    <h4><sup>11</sup>Be - One-Neutron Halo Nucleus</h4>
                     <div class="structure">
-                        <span class="core">&#185;&#8304;Be</span> + <span class="halo-n">n</span>
+                        <span class="core"><sup>10</sup>Be</span> + <span class="halo-n">n</span>
                     </div>
-                    <p>A one-neutron halo nucleus with an extremely low neutron separation energy of only 0.50 MeV. The valence neutron extends far beyond the <sup>10</sup>Be core.</p>
+                    <p>A classic one-neutron halo nucleus with an extremely low neutron separation energy of only 0.50 MeV. The valence neutron extends far beyond the <sup>10</sup>Be core, forming an extended halo structure.</p>
                     <div class="reaction-example">
                         <strong>Typical reaction:</strong><br>
                         <sup>11</sup>Be &#8594; <sup>10</sup>Be + n, with the halo neutron easily stripped
                     </div>
                 </div>
-                <div id="halo-info" class="info-panel">
-                    <h4>Halo Nuclei (<sup>11</sup>Li, <sup>6</sup>He)</h4>
+                <div id="li11-info" class="info-panel">
+                    <h4><sup>11</sup>Li - Two-Neutron Halo Nucleus</h4>
                     <div class="structure">
-                        <span class="core">Core</span> + <span class="halo-n">Halo neutrons</span>
+                        <span class="core"><sup>9</sup>Li</span> + <span class="halo-n">n</span> + <span class="halo-n">n</span>
                     </div>
-                    <p>Exotic nuclei with extended neutron halo structure. Extremely low separation energy makes them highly susceptible to breakup.</p>
+                    <p>A Borromean two-neutron halo nucleus. The two-neutron separation energy is only 0.37 MeV, while neither <sup>10</sup>Li nor the dineutron is bound. All three components are needed for binding.</p>
                     <div class="reaction-example">
-                        <strong>Key feature:</strong><br>
-                        Halo neutrons extend far beyond the core, resulting in anomalously large breakup cross-sections
+                        <strong>Typical reaction:</strong><br>
+                        <sup>11</sup>Li &#8594; <sup>9</sup>Li + 2n, exhibiting anomalously large reaction cross-section
                     </div>
                 </div>
             </div>

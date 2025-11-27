@@ -184,67 +184,73 @@ class ParticleSystem {
     createTargetNucleus(position = { x: 0, y: 0, z: 0 }, size = 2) {
         const group = new THREE.Group();
 
-        // Core sphere
+        // Core sphere - golden/amber color like a real nucleus visualization
         const coreGeom = new THREE.SphereGeometry(size, 64, 64);
         const coreMat = new THREE.MeshPhongMaterial({
-            color: 0x44ff88,
-            emissive: 0x22aa44,
-            emissiveIntensity: 0.3,
-            shininess: 50,
+            color: 0xd4a574,
+            emissive: 0x8b6914,
+            emissiveIntensity: 0.2,
+            shininess: 80,
             transparent: true,
-            opacity: 0.9
+            opacity: 0.85
         });
         const core = new THREE.Mesh(coreGeom, coreMat);
         group.add(core);
 
-        // Surface nucleons visualization
-        const nucleonGeom = new THREE.SphereGeometry(0.15, 16, 16);
-        const protonMat = new THREE.MeshPhongMaterial({ color: 0xff6666 });
-        const neutronMat = new THREE.MeshPhongMaterial({ color: 0x6688ff });
+        // Inner nucleons - densely packed inside the nucleus
+        const nucleonGeom = new THREE.SphereGeometry(size * 0.15, 12, 12);
+        const protonMat = new THREE.MeshPhongMaterial({
+            color: 0xff6b6b,
+            emissive: 0xff3333,
+            emissiveIntensity: 0.3
+        });
+        const neutronMat = new THREE.MeshPhongMaterial({
+            color: 0x4dabf7,
+            emissive: 0x2288ff,
+            emissiveIntensity: 0.3
+        });
 
-        for (let i = 0; i < 30; i++) {
+        // Create nucleons inside the nucleus (not on surface)
+        for (let i = 0; i < 50; i++) {
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos(2 * Math.random() - 1);
-            const r = size * 0.95;
+            const r = Math.random() * size * 0.85; // Inside the nucleus
 
             const x = r * Math.sin(phi) * Math.cos(theta);
             const y = r * Math.sin(phi) * Math.sin(theta);
             const z = r * Math.cos(phi);
 
-            const mat = Math.random() > 0.5 ? protonMat : neutronMat;
+            const mat = Math.random() > 0.45 ? protonMat : neutronMat; // Slightly more neutrons
             const nucleon = new THREE.Mesh(nucleonGeom, mat);
             nucleon.position.set(x, y, z);
             group.add(nucleon);
         }
 
-        // Outer glow
-        const glowGeom = new THREE.SphereGeometry(size * 1.2, 32, 32);
+        // Soft outer glow - warm color
+        const glowGeom = new THREE.SphereGeometry(size * 1.15, 32, 32);
         const glowMat = new THREE.MeshBasicMaterial({
-            color: 0x44ff88,
+            color: 0xffaa55,
             transparent: true,
-            opacity: 0.1
+            opacity: 0.08
         });
         const glow = new THREE.Mesh(glowGeom, glowMat);
         group.add(glow);
 
-        // Coulomb field visualization (optional rings)
-        for (let i = 1; i <= 3; i++) {
-            const ringGeom = new THREE.RingGeometry(size + i * 0.8, size + i * 0.8 + 0.05, 64);
-            const ringMat = new THREE.MeshBasicMaterial({
-                color: 0x44ff88,
-                transparent: true,
-                opacity: 0.1 / i,
-                side: THREE.DoubleSide
-            });
-            const ring = new THREE.Mesh(ringGeom, ringMat);
-            ring.rotation.x = Math.PI / 2;
-            group.add(ring);
-        }
+        // Coulomb field - subtle electric field lines
+        const fieldGeom = new THREE.SphereGeometry(size * 1.4, 24, 24);
+        const fieldMat = new THREE.MeshBasicMaterial({
+            color: 0x00d4ff,
+            transparent: true,
+            opacity: 0.05,
+            wireframe: true
+        });
+        const field = new THREE.Mesh(fieldGeom, fieldMat);
+        group.add(field);
 
         group.position.set(position.x, position.y, position.z);
         group.userData = {
             type: 'target',
-            charge: 50, // Approximate heavy nucleus
+            charge: 50,
             mass: 100
         };
 
@@ -566,11 +572,11 @@ class ParticleSystem {
         return group;
     }
 
-    // Create halo nucleus (core + halo neutrons)
-    createHaloNucleus(position = { x: 0, y: 0, z: 0 }) {
+    // Create 11Li - Two-neutron halo nucleus (9Li core + 2n halo)
+    createLi11(position = { x: 0, y: 0, z: 0 }) {
         const group = new THREE.Group();
 
-        // Core (Li-9 like)
+        // Core (9Li)
         const coreGeom = new THREE.SphereGeometry(0.4, 32, 32);
         const coreMat = new THREE.MeshPhongMaterial({
             color: 0x7b2aff,
@@ -580,7 +586,7 @@ class ParticleSystem {
         const core = new THREE.Mesh(coreGeom, coreMat);
         group.add(core);
 
-        // Halo neutrons (extended distribution)
+        // Halo neutrons (extended distribution - Borromean system)
         const haloGeom = new THREE.SphereGeometry(0.15, 32, 32);
         const haloMat = new THREE.MeshPhongMaterial({
             color: 0x4488ff,
@@ -598,8 +604,8 @@ class ParticleSystem {
         haloN2.position.set(0.7, -0.4, 0.2);
         group.add(haloN2);
 
-        // Halo visualization (diffuse cloud)
-        const haloCloudGeom = new THREE.SphereGeometry(1.0, 32, 32);
+        // Halo visualization (diffuse cloud - larger for 2n halo)
+        const haloCloudGeom = new THREE.SphereGeometry(1.2, 32, 32);
         const haloCloudMat = new THREE.MeshBasicMaterial({
             color: 0x4488ff,
             transparent: true,
@@ -610,7 +616,7 @@ class ParticleSystem {
         group.add(haloCloud);
 
         // Dashed outer boundary
-        const outerGeom = new THREE.SphereGeometry(1.1, 16, 16);
+        const outerGeom = new THREE.SphereGeometry(1.3, 16, 16);
         const outerMat = new THREE.MeshBasicMaterial({
             color: 0x4488ff,
             transparent: true,
@@ -622,7 +628,7 @@ class ParticleSystem {
 
         group.position.set(position.x, position.y, position.z);
         group.userData = {
-            type: 'halo',
+            type: 'li11',
             charge: 3,
             mass: 11,
             velocity: new THREE.Vector3(),

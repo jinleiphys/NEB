@@ -541,8 +541,8 @@ function selectProjectile(type) {
         case 'be11':
             projectile = state.particleSystem.createBe11({ x: 0, y: 0, z: 0 });
             break;
-        case 'halo':
-            projectile = state.particleSystem.createHaloNucleus({ x: 0, y: 0, z: 0 });
+        case 'li11':
+            projectile = state.particleSystem.createLi11({ x: 0, y: 0, z: 0 });
             break;
         default:
             projectile = state.particleSystem.createDeuteron({ x: 0, y: 0, z: 0 });
