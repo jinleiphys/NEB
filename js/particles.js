@@ -674,6 +674,419 @@ class ParticleSystem {
         this.trailsEnabled = !this.trailsEnabled;
         return this.trailsEnabled;
     }
+
+    // Create gamma ray effect - high energy photon beam
+    createGammaRay(origin, direction = null) {
+        const group = new THREE.Group();
+
+        // Random direction if not specified (isotropic emission)
+        if (!direction) {
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            direction = new THREE.Vector3(
+                Math.sin(phi) * Math.cos(theta),
+                Math.sin(phi) * Math.sin(theta),
+                Math.cos(phi)
+            );
+        }
+        direction.normalize();
+
+        // Gamma ray beam - bright yellow/white line
+        const beamLength = 3;
+        const beamGeom = new THREE.CylinderGeometry(0.02, 0.02, beamLength, 8);
+        const beamMat = new THREE.MeshBasicMaterial({
+            color: 0xffff00,
+            transparent: true,
+            opacity: 1.0
+        });
+        const beam = new THREE.Mesh(beamGeom, beamMat);
+
+        // Outer glow
+        const glowGeom = new THREE.CylinderGeometry(0.06, 0.06, beamLength, 8);
+        const glowMat = new THREE.MeshBasicMaterial({
+            color: 0xffffaa,
+            transparent: true,
+            opacity: 0.4
+        });
+        const glow = new THREE.Mesh(glowGeom, glowMat);
+        beam.add(glow);
+
+        // Point toward direction
+        beam.quaternion.setFromUnitVectors(
+            new THREE.Vector3(0, 1, 0),
+            direction
+        );
+        // Offset so beam starts at origin
+        beam.position.copy(origin).add(direction.clone().multiplyScalar(beamLength / 2));
+
+        group.add(beam);
+        group.position.copy(origin);
+
+        group.userData = {
+            type: 'gamma',
+            velocity: direction.clone().multiplyScalar(0.8), // Very fast
+            life: 1.0,
+            decay: 0.025,
+            beam: beam,
+            origin: origin.clone()
+        };
+
+        return group;
+    }
+
+    // Create multiple gamma rays (de-excitation cascade)
+    createGammaRays(origin, count = 3) {
+        const gammas = [];
+        for (let i = 0; i < count; i++) {
+            gammas.push(this.createGammaRay(origin));
+        }
+        return gammas;
+    }
+
+    // Update gamma ray
+    updateGammaRay(gamma) {
+        if (!gamma || !gamma.userData) return false;
+
+        gamma.position.add(gamma.userData.velocity);
+        gamma.userData.life -= gamma.userData.decay;
+
+        // Update beam opacity
+        if (gamma.userData.beam && gamma.userData.beam.material) {
+            gamma.userData.beam.material.opacity = gamma.userData.life;
+            // Also update children (glow)
+            gamma.userData.beam.children.forEach(child => {
+                if (child.material) {
+                    child.material.opacity = gamma.userData.life * 0.4;
+                }
+            });
+        }
+
+        return gamma.userData.life > 0;
+    }
+
+    // Create energy release wave - expanding spherical shockwave
+    createEnergyWave(origin, color = 0x00ffff, maxRadius = 8) {
+        const group = new THREE.Group();
+
+        // Multiple concentric rings for wave effect
+        const ringCount = 3;
+        for (let i = 0; i < ringCount; i++) {
+            const ringGeom = new THREE.RingGeometry(0.1, 0.15, 64);
+            const ringMat = new THREE.MeshBasicMaterial({
+                color: color,
+                transparent: true,
+                opacity: 0.8 - i * 0.2,
+                side: THREE.DoubleSide
+            });
+            const ring = new THREE.Mesh(ringGeom, ringMat);
+            ring.userData.delay = i * 0.1; // Stagger expansion
+            group.add(ring);
+
+            // Clone for different orientation
+            const ring2 = ring.clone();
+            ring2.rotation.x = Math.PI / 2;
+            ring2.userData.delay = i * 0.1;
+            group.add(ring2);
+
+            const ring3 = ring.clone();
+            ring3.rotation.y = Math.PI / 2;
+            ring3.userData.delay = i * 0.1;
+            group.add(ring3);
+        }
+
+        group.position.copy(origin);
+        group.userData = {
+            type: 'energyWave',
+            life: 1.0,
+            decay: 0.02,
+            maxRadius: maxRadius,
+            currentRadius: 0.1
+        };
+
+        return group;
+    }
+
+    // Update energy wave
+    updateEnergyWave(wave) {
+        if (!wave || !wave.userData) return false;
+
+        wave.userData.life -= wave.userData.decay;
+        wave.userData.currentRadius += 0.15;
+
+        const scale = wave.userData.currentRadius;
+        wave.children.forEach((ring, i) => {
+            const delay = ring.userData.delay || 0;
+            const effectiveScale = Math.max(0.1, scale - delay * 5);
+            ring.scale.set(effectiveScale, effectiveScale, effectiveScale);
+            if (ring.material) {
+                ring.material.opacity = wave.userData.life * (0.8 - (i % 3) * 0.2);
+            }
+        });
+
+        return wave.userData.life > 0 && wave.userData.currentRadius < wave.userData.maxRadius;
+    }
+
+    // Create compound nucleus (temporary excited state)
+    createCompoundNucleus(position, targetSize = 2) {
+        const group = new THREE.Group();
+
+        // Excited core - pulsating and brighter than normal target
+        const coreGeom = new THREE.SphereGeometry(targetSize * 0.9, 64, 64);
+        const coreMat = new THREE.MeshPhongMaterial({
+            color: 0xffaa00,
+            emissive: 0xff6600,
+            emissiveIntensity: 1.2,
+            shininess: 150,
+            transparent: true,
+            opacity: 0.9
+        });
+        const core = new THREE.Mesh(coreGeom, coreMat);
+        group.add(core);
+
+        // Hot inner region
+        const hotGeom = new THREE.SphereGeometry(targetSize * 0.5, 32, 32);
+        const hotMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.95
+        });
+        const hot = new THREE.Mesh(hotGeom, hotMat);
+        group.add(hot);
+
+        // Oscillating energy shell
+        const shellGeom = new THREE.SphereGeometry(targetSize * 1.1, 32, 32);
+        const shellMat = new THREE.MeshBasicMaterial({
+            color: 0xff4400,
+            transparent: true,
+            opacity: 0.4,
+            wireframe: true
+        });
+        const shell = new THREE.Mesh(shellGeom, shellMat);
+        group.add(shell);
+
+        // Excitation energy glow layers
+        for (let i = 1; i <= 3; i++) {
+            const glowGeom = new THREE.SphereGeometry(targetSize * (1.2 + i * 0.2), 24, 24);
+            const glowMat = new THREE.MeshBasicMaterial({
+                color: i === 1 ? 0xff6600 : (i === 2 ? 0xff8800 : 0xffaa00),
+                transparent: true,
+                opacity: 0.2 / i
+            });
+            const glow = new THREE.Mesh(glowGeom, glowMat);
+            group.add(glow);
+        }
+
+        // Rotating excitation rings
+        for (let i = 0; i < 3; i++) {
+            const ringGeom = new THREE.TorusGeometry(targetSize * (1.3 + i * 0.15), 0.03, 8, 64);
+            const ringMat = new THREE.MeshBasicMaterial({
+                color: 0xffff00,
+                transparent: true,
+                opacity: 0.5 - i * 0.1
+            });
+            const ring = new THREE.Mesh(ringGeom, ringMat);
+            ring.rotation.x = Math.PI / 2 + i * Math.PI / 6;
+            ring.rotation.z = i * Math.PI / 4;
+            ring.userData.rotationSpeed = 0.05 + i * 0.02;
+            group.add(ring);
+        }
+
+        group.position.copy(position);
+        group.userData = {
+            type: 'compoundNucleus',
+            life: 1.0,
+            decay: 0.008, // Longer lifetime for resonance
+            pulsePhase: 0,
+            core: core,
+            hot: hot,
+            shell: shell,
+            baseSize: targetSize
+        };
+
+        return group;
+    }
+
+    // Update compound nucleus animation
+    updateCompoundNucleus(compound) {
+        if (!compound || !compound.userData) return false;
+
+        compound.userData.life -= compound.userData.decay;
+        compound.userData.pulsePhase += 0.15;
+
+        const pulse = Math.sin(compound.userData.pulsePhase);
+        const baseSize = compound.userData.baseSize;
+
+        // Pulsate core
+        if (compound.userData.core) {
+            const coreScale = 1 + pulse * 0.08;
+            compound.userData.core.scale.set(coreScale, coreScale, coreScale);
+            if (compound.userData.core.material) {
+                compound.userData.core.material.emissiveIntensity = 1.0 + pulse * 0.4;
+            }
+        }
+
+        // Pulsate hot center
+        if (compound.userData.hot) {
+            const hotScale = 1 + pulse * 0.15;
+            compound.userData.hot.scale.set(hotScale, hotScale, hotScale);
+            if (compound.userData.hot.material) {
+                compound.userData.hot.material.opacity = 0.8 + pulse * 0.2;
+            }
+        }
+
+        // Oscillate shell
+        if (compound.userData.shell) {
+            const shellScale = 1 + Math.sin(compound.userData.pulsePhase * 1.5) * 0.1;
+            compound.userData.shell.scale.set(shellScale, shellScale, shellScale);
+        }
+
+        // Rotate excitation rings
+        compound.children.forEach(child => {
+            if (child.userData && child.userData.rotationSpeed) {
+                child.rotation.z += child.userData.rotationSpeed;
+            }
+        });
+
+        // Fade out near end
+        if (compound.userData.life < 0.3) {
+            const fade = compound.userData.life / 0.3;
+            compound.children.forEach(child => {
+                if (child.material) {
+                    child.material.opacity *= fade;
+                }
+            });
+        }
+
+        return compound.userData.life > 0;
+    }
+
+    // Create excited target nucleus (inelastic breakup - target excitation)
+    createExcitedTarget(position, targetSize = 2, excitationLevel = 1) {
+        const group = new THREE.Group();
+
+        // Base target structure (similar to normal but excited)
+        const coreGeom = new THREE.SphereGeometry(targetSize * 0.8, 64, 64);
+        const coreMat = new THREE.MeshPhongMaterial({
+            color: 0xff7744,
+            emissive: 0xff5500,
+            emissiveIntensity: 0.9 + excitationLevel * 0.3,
+            shininess: 100,
+            transparent: true,
+            opacity: 0.85
+        });
+        const core = new THREE.Mesh(coreGeom, coreMat);
+        group.add(core);
+
+        // Bright center
+        const centerGeom = new THREE.SphereGeometry(targetSize * 0.4, 32, 32);
+        const centerMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.9
+        });
+        const center = new THREE.Mesh(centerGeom, centerMat);
+        group.add(center);
+
+        // Excitation indicator - oscillating outer shells
+        for (let i = 0; i < 2; i++) {
+            const shellGeom = new THREE.SphereGeometry(targetSize * (1.1 + i * 0.15), 32, 32);
+            const shellMat = new THREE.MeshBasicMaterial({
+                color: 0xff8844,
+                transparent: true,
+                opacity: 0.25 - i * 0.08,
+                wireframe: i === 1
+            });
+            const shell = new THREE.Mesh(shellGeom, shellMat);
+            shell.userData.oscillateSpeed = 0.1 + i * 0.05;
+            shell.userData.oscillatePhase = i * Math.PI / 2;
+            group.add(shell);
+        }
+
+        // Glow indicating excitation energy
+        const glowGeom = new THREE.SphereGeometry(targetSize * 1.5, 24, 24);
+        const glowMat = new THREE.MeshBasicMaterial({
+            color: 0xffaa66,
+            transparent: true,
+            opacity: 0.12 * excitationLevel
+        });
+        const glow = new THREE.Mesh(glowGeom, glowMat);
+        group.add(glow);
+
+        group.position.copy(position);
+        group.userData = {
+            type: 'excitedTarget',
+            excitationLevel: excitationLevel,
+            life: 1.0,
+            decay: 0.015,
+            phase: 0,
+            core: core,
+            center: center,
+            baseSize: targetSize
+        };
+
+        return group;
+    }
+
+    // Update excited target
+    updateExcitedTarget(excited) {
+        if (!excited || !excited.userData) return false;
+
+        excited.userData.life -= excited.userData.decay;
+        excited.userData.phase += 0.12;
+
+        const vibration = Math.sin(excited.userData.phase);
+
+        // Vibrate/pulsate core
+        if (excited.userData.core) {
+            const scale = 1 + vibration * 0.03 * excited.userData.excitationLevel;
+            excited.userData.core.scale.set(scale, scale, scale);
+        }
+
+        // Oscillate shells
+        excited.children.forEach(child => {
+            if (child.userData && child.userData.oscillateSpeed) {
+                child.userData.oscillatePhase += child.userData.oscillateSpeed;
+                const osc = Math.sin(child.userData.oscillatePhase);
+                const oscScale = 1 + osc * 0.05;
+                child.scale.set(oscScale, oscScale, oscScale);
+            }
+        });
+
+        return excited.userData.life > 0;
+    }
+
+    // Create particle emission burst (for decay/de-excitation)
+    createEmissionBurst(origin, particleType = 'neutron', count = 1) {
+        const particles = [];
+
+        for (let i = 0; i < count; i++) {
+            let particle;
+            if (particleType === 'neutron') {
+                particle = this.createNeutron(origin);
+            } else if (particleType === 'proton') {
+                particle = this.createProton(origin);
+            } else if (particleType === 'alpha') {
+                particle = this.createAlpha(origin);
+            }
+
+            if (particle) {
+                // Random emission direction
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                const speed = 0.1 + Math.random() * 0.15;
+
+                particle.userData.velocity = new THREE.Vector3(
+                    speed * Math.sin(phi) * Math.cos(theta),
+                    speed * Math.sin(phi) * Math.sin(theta),
+                    speed * Math.cos(phi)
+                );
+
+                particles.push(particle);
+            }
+        }
+
+        return particles;
+    }
 }
 
 // Export for use in other modules
